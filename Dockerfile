@@ -1,5 +1,6 @@
-FROM node:16-alpine
+FROM node:16-alpine as builder
 
+ENV NODE_ENV build
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -8,11 +9,18 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 # If you are building your code for production
 # RUN npm ci --only=production
 COPY . .
 
-RUN npm run build
-EXPOSE 3000
+RUN npm run build \
+    && npm prune --production
+
+# ---
+
+FROM node:12-alpine
+
+COPY --from=builder /usr/src/app/ ./
+
 CMD [ "node", "dist/main" ]
