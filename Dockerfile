@@ -1,8 +1,8 @@
-FROM node:16-alpine as builder
+FROM public.ecr.aws/lambda/nodejs:12 as builder
 
-ENV NODE_ENV build
+ARG APP_PATH=/var/app
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR $APP_PATH
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -19,8 +19,18 @@ RUN npm run build \
 
 # ---
 
-FROM node:12-alpine
+FROM public.ecr.aws/lambda/nodejs:12
+
+WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app/ ./
 
-CMD [ "node", "dist/main" ]
+CMD [ "dist/lambda.handler"]
+
+# remove unused dependencies
+# RUN rm -rf node_modules/rxjs/src/
+# RUN rm -rf node_modules/rxjs/bundles/
+# RUN rm -rf node_modules/rxjs/_esm5/
+# RUN rm -rf node_modules/rxjs/_esm2015/
+# RUN rm -rf node_modules/swagger-ui-dist/*.map
+# RUN rm -rf node_modules/couchbase/src/
