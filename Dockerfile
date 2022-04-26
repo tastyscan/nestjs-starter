@@ -21,9 +21,9 @@ RUN npm run build \
 
 FROM public.ecr.aws/lambda/nodejs:12
 
-WORKDIR /usr/src/app
+WORKDIR /var/app
 
-COPY --from=builder /usr/src/app/ ./
+COPY --from=builder /var/app ./
 
 CMD [ "dist/lambda.handler"]
 
