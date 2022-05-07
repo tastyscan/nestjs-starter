@@ -21,7 +21,7 @@ jobs:
     env:
       ECR_IMAGE_TAG: latest
       AWS_DEFAULT_REGION: us-east-1
-      AWS_LAMBDA_FUNC_NAME: starter-nestjs-docker
+      AWS_LAMBDA_FUNC_NAME: starter-nestjs-docker-lambda
       AWS_ECR_REPOSITORY_NAME: hello-world
 
     steps:

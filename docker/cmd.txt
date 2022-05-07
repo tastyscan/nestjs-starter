@@ -1,0 +1,19 @@
+# Force kill container
+docker rm $contain_name -fv
+# show running containers
+docker ps
+# show running containers with problems
+docker ps -a
+# run docker containers
+docker run -d -p 3000:3000 -v %cd%:/app -v --env-file $file --env PORT=4000 /app/node_modules --name $container_name $image_name
+# run docker logs
+docker logs $container_name
+
+# run shell into container
+docker exec -it $container_name bash
+
+# docker build
+docker build -t $template_name .
+
+# docker compose down with delete volumes
+docker-compose down -v

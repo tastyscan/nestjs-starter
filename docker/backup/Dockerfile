@@ -1,6 +1,6 @@
-FROM public.ecr.aws/lambda/nodejs:12 as builder
+FROM node:18-alpine3.14 as development
 
-ARG APP_PATH=${LAMBDA_TASK_ROOT}
+ARG APP_PATH=/usr/src/app
 # Create app directory
 WORKDIR $APP_PATH
 
@@ -14,20 +14,24 @@ RUN npm ci
 # RUN npm ci --only=production
 COPY . .
 
-RUN npm run build \
-    && npm prune --production
+RUN npm run build
 
 # ---
 
-FROM public.ecr.aws/lambda/nodejs:12
+FROM node:18-alpine3.14 as production
 
-WORKDIR ${LAMBDA_TASK_ROOT}
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-COPY --from=builder ${LAMBDA_TASK_ROOT}/package*.json ./
-COPY --from=builder ${LAMBDA_TASK_ROOT}/dist ./dist/
-COPY --from=builder ${LAMBDA_TASK_ROOT}/node_modules ./node_modules/
+WORKDIR /usr/src/app
 
-CMD [ "dist/lambda.handler"]
+COPY package*.json ./
+
+RUN npm install --production
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]
 
 # remove unused dependencies
 # RUN rm -rf node_modules/rxjs/src/
