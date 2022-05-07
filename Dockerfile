@@ -1,6 +1,6 @@
 FROM public.ecr.aws/lambda/nodejs:12 as builder
 
-ARG APP_PATH=/var/app
+ARG APP_PATH=${LAMBDA_TASK_ROOT}
 # Create app directory
 WORKDIR $APP_PATH
 
@@ -21,9 +21,11 @@ RUN npm run build \
 
 FROM public.ecr.aws/lambda/nodejs:12
 
-WORKDIR /var/app
+WORKDIR ${LAMBDA_TASK_ROOT}
 
-COPY --from=builder /var/app ./
+COPY --from=builder ${LAMBDA_TASK_ROOT}/package*.json ./
+COPY --from=builder ${LAMBDA_TASK_ROOT}/dist ./dist/
+COPY --from=builder ${LAMBDA_TASK_ROOT}/node_modules ./node_modules/
 
 CMD [ "dist/lambda.handler"]
 
