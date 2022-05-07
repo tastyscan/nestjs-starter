@@ -4,6 +4,7 @@ npm-debug.log
 *.md
 !README*.md
 README-secret.md
+README.md
 
 .git
 .gitignore
@@ -21,4 +22,3 @@ aws
 events
 Makefile
 *.sh
-test
